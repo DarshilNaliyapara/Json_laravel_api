@@ -40,11 +40,13 @@ class UserController extends Controller
             ]);
 
             event(new Registered($user));
-            // Mail::to($user);
 
             Auth::login($user);
+
             $user = Auth::user();
+            
             Session::regenerate();
+            
             $token = $user->createToken($request->name)->plainTextToken;
             if ($user) {
                 return redirect('/');
@@ -54,7 +56,9 @@ class UserController extends Controller
                     "response_data" => $user,
                     'token' => $token,
                 ], 200);
-            } else {
+            } 
+            
+            else {
                 return response()->json([
                     "status" => false,
                     "message" => "Failed to Create User.",
@@ -84,10 +88,11 @@ class UserController extends Controller
 
         $request->session()->regenerate();
         if ($user) {
-
             $token = $user->createToken($request->name);
+
             return redirect('/');
-            // return response()->json(["status" => true, "message" => "Login Successfully Welcome $user->name.", "response_data" => $user, 'token' => $token->plainTextToken,], 200);
+
+            return response()->json(["status" => true, "message" => "Login Successfully Welcome $user->name.", "response_data" => $user, 'token' => $token->plainTextToken,], 200);
         } else {
             return response()->json(["status" => false, "message" => "Failed To login User,Check your Input "], 404);
         }
@@ -95,19 +100,16 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+
         return redirect('/login');
+
         return response()->json(["status" => true, "message" => "user has beeen logout"], 200);
     }
-    protected function autodeleteuser(Schedule $schedule){
-        $schedule->call(function () {
-
-            $users=User::whereNull('email_verified_at')->delete();
-       
-       })->hourly();
-    }
+   
 }

@@ -12,6 +12,7 @@ class ApiController extends Controller
 
         $customers = Form::where('meta_name', 'customers')->first();
         $data = [];
+        $forms = [];
         if (!empty($customers)) {
             $data = isset($customers->meta_value) ? json_decode($customers->meta_value, true) : [];
             if ($data) {
@@ -29,35 +30,77 @@ class ApiController extends Controller
 
     public function store(Request $request, Form $form)
     {
-        $data = [
-            'meta_name' => 'customers',
-            'meta_value' => json_encode($request->customers),
-        ];
-        if ($data) {
+        $customers = Form::where('meta_name', 'customers')->first();
+        $forms = json_decode($customers->meta_value, true);
+        if (count($forms)>0) {
 
-            $form = Form::updateOrCreate(
-                ['meta_name' => 'customers'],
-                $data
-            );
+            $vals = $request->inputdata;
 
+          
+            $mxnum = -1;
+            foreach ($forms as $form) {
+                if ($form['id'] > $mxnum) {
+                    $mxnum = $form['id'];
+                }
+            }
 
-            $customers = Form::where('meta_name', 'customers')->first();
+            foreach ($vals as $key => $val) {
 
-            $data = isset($customers->meta_value) ? json_decode($customers->meta_value, true) : [];
-
-            if ($data) {
+                $mxnum ++;
+                $forms[] = [
+                    'id' => $mxnum,
+                    'name' => $val['name'],
+                    'email' => $val['email'],
+                ];
+            }
+            if ($forms) {
                 $AllData = array_map(function ($item) {
                     return $item;
-                }, $data);
+                }, $forms);
+                $customers->meta_value = json_encode($forms);
+                $customers->save();
+    
                 return response()->json(["status" => true, "message" => "Data Inserted Successfully.", "response_data" => $AllData], 200);
             } else {
                 return response()->json(["status" => false, "message" => "Failed to Insert Data."], 404);
             }
+           
         } else {
-            return response()->json(["status" => false, "message" => "Failed to Insert Data."], 404);
+            $vals = $request->inputdata;
+
+            foreach ($vals as $key => $val) {
+
+                $name = $val['name'];
+                $email = $val['email'];
+                $id = $key + 1;
+
+                $forms[] = [
+                    'id' => $id,
+                    'name' => $name,
+                    'email' => $email,
+                ];
+            }
+            if ($forms) {
+                $AllData = array_map(function ($item) {
+                    return $item;
+                }, $forms);
+                $data = [
+                    'meta_name' => 'customers',
+                    'meta_value' => json_encode($forms),
+                ];
+                $form = Form::updateOrCreate(
+                    ['meta_name' => 'customers'],
+                    $data
+                );
+                return response()->json(["status" => true, "message" => "Data Inserted Successfully.", "response_data" => $AllData], 200);
+            } else {
+                return response()->json(["status" => false, "message" => "Failed to Insert Data."], 404);
+            }
+           
         }
+        
     }
-    public function show(Request $request, Form $form, string $id)
+    public function show(Request $request, Form $form, int $id)
     {
 
         $customers = Form::where('meta_name', 'customers')->first();
@@ -69,8 +112,7 @@ class ApiController extends Controller
             }));
             if ($filteredData) {
                 return response()->json(["status" => true, "response_data" => $filteredData], 200);
-            }
-            else {
+            } else {
                 return response()->json(["status" => false, "message" => "No Data Found on given id: $id"], 404);
             }
 
@@ -79,10 +121,9 @@ class ApiController extends Controller
         }
     }
 
-    public function edit(string $id)
+    public function edit(int $id)
     {
         $customers = Form::where('meta_name', 'customers')->first();
-
 
         $data = isset($customers->meta_value) ? json_decode($customers->meta_value, true) : [];
 
@@ -94,11 +135,10 @@ class ApiController extends Controller
             return $items['id'] == $id;
         }));
 
-
         return view('index', ['forms' => $forms, 'id' => $id, 'for' => $filteredForm]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
         $vals = $request->customers;
 
@@ -129,37 +169,33 @@ class ApiController extends Controller
             $customers->meta_value = json_encode($forms);
             $customers->save();
 
-
-
             return response()->json(["status" => true, "message" => "Data Updated Successfully.", "response_data" => $forms], 200);
         } else {
             return response()->json(["status" => false, "message" => "Failed to Update data"], 404);
         }
     }
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         $customers = Form::where('meta_name', 'customers')->first();
         $data = isset($customers->meta_value) ? json_decode($customers->meta_value, true) : [];
 
-if ($data) {
-
-
-        $filteredForm = array_filter($data, function ($item) use ($id) {
-            return  $item['id'] != $id;
-        });
-
-        $data = array_values($filteredForm);
-        $customers->meta_value = json_encode($data);
-        $customers->save();
         if ($data) {
-            return response()->json(["status" => true, "message" => "Data Deleted Successfully.", "response_data" => $data], 200);
+
+            $filteredForm = array_filter($data, function ($item) use ($id) {
+                return $item['id'] != $id;
+            });
+
+            $data = array_values($filteredForm);
+            $customers->meta_value = json_encode($data);
+            $customers->save();
+            if ($data) {
+                return response()->json(["status" => true, "message" => "Data Deleted Successfully.", "response_data" => $data], 200);
+            } else {
+                return response()->json(["status" => false, "message" => "Failed to Delete data"], 404);
+            }
         } else {
-            return response()->json(["status" => false, "message" => "Failed to Delete data"], 404);
+            return response()->json(["status" => false, "message" => "Failed to Delete data,No Data Found"], 404);
         }
     }
-else {
-    return response()->json(["status" => false, "message" => "Failed to Delete data,No Data Found"], 404);
-}
-}
 
 }
