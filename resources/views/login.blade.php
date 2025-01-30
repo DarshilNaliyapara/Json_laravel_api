@@ -70,13 +70,17 @@
         .clone {
             margin-bottom: 20px;
         }
+
+        label {
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
-   
-    <form action="{{route('auth.login')}}" id="input" method="post">
-        <p> Login </p>
+
+    <form action="{{ route('auth.login') }}" id="input" method="post">
+        <h1> Login </h1>
         {{-- <input type="hidden" name="id" id="id" value="{{ isset($id) ? $id : '' }}"> --}}
         @csrf
 
@@ -94,12 +98,13 @@
                 <input type="password" name="password" id="password" required>
             </div>
         </div>
-        
-        <div class="cloned"></div>
 
+        <div style="margin-bottom: 15px">
+            <a href="/register">no account? Register</a>
+        </div>
         <button type="submit" id="submit-btn">Login</button>
+
     </form>
 </body>
 
 </html>
-

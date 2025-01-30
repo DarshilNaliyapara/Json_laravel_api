@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Form;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isNull;
+
 class FormController extends Controller
 {
     public function index(Form $form)
@@ -29,12 +31,11 @@ class FormController extends Controller
     {
 
         $customers = Form::where('meta_name', 'customers')->first();
-        $forms = json_decode($customers->meta_value, true);
-        if (count($forms)>0) {
+        $forms = empty($customers)?[]:json_decode($customers->meta_value, true);
+        if (count($forms)>0 && !empty($customers)) {
 
             $vals = $request->inputdata;
-
-          
+           
             $mxnum = -1;
             foreach ($forms as $form) {
                 if ($form['id'] > $mxnum) {
@@ -56,8 +57,9 @@ class FormController extends Controller
             $customers->save();
 
         } else {
+           
             $vals = $request->inputdata;
-
+            
             foreach ($vals as $key => $val) {
 
                 $name = $val['name'];
@@ -70,7 +72,7 @@ class FormController extends Controller
                     'email' => $email,
                 ];
             }
-
+           
             $data = [
                 'meta_name' => 'customers',
                 'meta_value' => json_encode($forms),
