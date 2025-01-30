@@ -74,7 +74,10 @@
 </head>
 
 <body>
+
     <form action="{{route('auth.register')}}" id="input" method="post">
+        <p>Register </p>
+        
         {{-- <input type="hidden" name="id" id="id" value="{{ isset($id) ? $id : '' }}"> --}}
         @csrf
 

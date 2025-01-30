@@ -2,67 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use Generator;
 use App\Models\User;
-use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
 
-        public function showregister()
+    public function showregister()
     {
-       return view('register');
+        return view('register');
     }
     public function showlogin()
     {
-       return view('login');
+        return view('login');
     }
 
-    public function register(Request $request,User $user)
+    public function register(Request $request, User $user)
     {
         try {
             $validated = $request->validate([
                 'name' => 'required|min:3',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:4'
+                'password' => 'required|min:4',
             ]);
 
-            
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
 
             ]);
-           
- 
+
             event(new Registered($user));
             // Mail::to($user);
-           
-            Auth::attempt($validated);
+
+            Auth::login($user);
             $user = Auth::user();
             Session::regenerate();
             $token = $user->createToken($request->name)->plainTextToken;
             if ($user) {
+                return redirect('/');
                 return response()->json([
                     "status" => true,
-                    "message" =>  "User Created Successfully.",
+                    "message" => "User Created Successfully.",
                     "response_data" => $user,
-                    'token' => $token
+                    'token' => $token,
                 ], 200);
             } else {
                 return response()->json([
                     "status" => false,
-                    "message" =>  "Failed to Create User.",
-                    'token' => $token
+                    "message" => "Failed to Create User.",
+                    'token' => $token,
                 ], 404);
             }
         } catch (ValidationException $e) {
@@ -70,7 +66,7 @@ class UserController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Validation Error",
-                "errors" => $e->errors()
+                "errors" => $e->errors(),
             ], 422);
         }
     }
@@ -79,16 +75,18 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|min:3',
             'email' => 'required|email',
-            'password' => 'required|min:4'
+            'password' => 'required|min:4',
         ]);
- Session::regenerate();
-       Auth::attempt($validated);
+
+        Auth::attempt($validated);
 
         $user = Auth::user();
+
+        $request->session()->regenerate();
         if ($user) {
 
             $token = $user->createToken($request->name);
-          return redirect('/');
+            return redirect('/');
             // return response()->json(["status" => true, "message" => "Login Successfully Welcome $user->name.", "response_data" => $user, 'token' => $token->plainTextToken,], 200);
         } else {
             return response()->json(["status" => false, "message" => "Failed To login User,Check your Input "], 404);
@@ -97,10 +95,19 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
-        
-// return redirect('/login');
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+        return redirect('/login');
         return response()->json(["status" => true, "message" => "user has beeen logout"], 200);
     }
-    
-    
+    protected function autodeleteuser(Schedule $schedule){
+        $schedule->call(function () {
+
+            $users=User::whereNull('email_verified_at')->delete();
+       
+       })->hourly();
+    }
 }

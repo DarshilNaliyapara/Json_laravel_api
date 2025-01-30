@@ -29,9 +29,9 @@ Route::post('/login', [UserController::class, 'login'])->name('auth.login');
 Route::middleware('auth')->get('/logout', [UserController::class, 'logout'])->name('auth.logout');
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-
+return redirect('/');
     return response()->json(["status" => true, "message" => "Login Successfully Welcome."]);
 })->middleware(['auth', 'signed'])->name('verification.verify');
-
-Route::get('/test', [TestController::class, 'test'])->name('test.index');
-Route::post('/test', [TestController::class, 'search'])->name('test.search');
+Route::get('email/verify', function () {
+    return view('verify');
+})->middleware('auth')->name('verification.notice');
