@@ -214,7 +214,7 @@
         @if (Route::currentRouteName() === 'forms.edit')
             <a href="/">Home</a>
         @endif
-
+        <a href="/logout">Logout</a>
         <div class="clone">
             <field class="form-group">
                 <label>Name:</label>

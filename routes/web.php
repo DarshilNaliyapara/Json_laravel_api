@@ -1,12 +1,10 @@
 <?php
 
-use App\Models\Form;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
-
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,14 +15,23 @@ use App\Http\Controllers\UserController;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 |
-*/
+ */
 
-Route::get('/', [FormController::class, 'index'])->name('forms.index');
-Route::resource('forms', FormController::class);
-// Route::get('forms/{form}', [FormController::class,'delete'])->name('forms.delete');
-
+Route::middleware(['auth', 'verified'])->get('/', [FormController::class, 'index'])->name('forms.index');
+Route::middleware(['auth', 'verified'])->resource('forms', FormController::class);
 
 
 
-Route::get('/test',[TestController::class,'test'])->name('test.index');
-Route::post('/test',[TestController::class,'search'])->name('test.search');
+Route::get('/register', [UserController::class, 'showregister'])->name('auth.showregister');
+Route::post('/register', [UserController::class, 'register'])->name('auth.register');
+Route::get('/login', [UserController::class, 'showlogin'])->name('auth.showlogin');
+Route::post('/login', [UserController::class, 'login'])->name('auth.login');
+Route::middleware('auth')->get('/logout', [UserController::class, 'logout'])->name('auth.logout');
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return response()->json(["status" => true, "message" => "Login Successfully Welcome."]);
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::get('/test', [TestController::class, 'test'])->name('test.index');
+Route::post('/test', [TestController::class, 'search'])->name('test.search');

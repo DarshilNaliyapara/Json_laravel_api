@@ -19,6 +19,7 @@ class FormController extends Controller
             $forms = array_map(function ($item) {
                 return $item;
             }, $data);
+            
         }
 
         return view('index', ['forms' => $forms, 'form' => $form]);
@@ -28,12 +29,12 @@ class FormController extends Controller
     {
 
         $customers = Form::where('meta_name', 'customers')->first();
-
-        if ($customers) {
+        $forms = json_decode($customers->meta_value, true);
+        if (count($forms)>0) {
 
             $vals = $request->inputdata;
 
-            $forms = json_decode($customers->meta_value, true);
+          
             $mxnum = -1;
             foreach ($forms as $form) {
                 if ($form['id'] > $mxnum) {

@@ -74,7 +74,7 @@
 </head>
 
 <body>
-    <form action="{{route('auth.register')}}" id="input" method="post">
+    <form action="{{route('auth.login')}}" id="input" method="post">
         {{-- <input type="hidden" name="id" id="id" value="{{ isset($id) ? $id : '' }}"> --}}
         @csrf
 
@@ -95,7 +95,7 @@
         
         <div class="cloned"></div>
 
-        <button type="submit" id="submit-btn">Save</button>
+        <button type="submit" id="submit-btn">Login</button>
     </form>
 </body>
 

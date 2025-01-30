@@ -8,17 +8,25 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
 
-        public function showusers()
+        public function showregister()
     {
-        return User::all();
+       return view('register');
+    }
+    public function showlogin()
+    {
+       return view('login');
     }
 
-    public function register(Request $request)
+    public function register(Request $request,User $user)
     {
         try {
             $validated = $request->validate([
@@ -27,16 +35,21 @@ class UserController extends Controller
                 'password' => 'required|min:4'
             ]);
 
-
+            
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
 
             ]);
+           
+ 
+            event(new Registered($user));
+            // Mail::to($user);
+           
             Auth::attempt($validated);
             $user = Auth::user();
-
+            Session::regenerate();
             $token = $user->createToken($request->name)->plainTextToken;
             if ($user) {
                 return response()->json([
@@ -68,14 +81,15 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:4'
         ]);
-
+ Session::regenerate();
        Auth::attempt($validated);
 
         $user = Auth::user();
         if ($user) {
 
             $token = $user->createToken($request->name);
-            return response()->json(["status" => true, "message" => "Login Successfully Welcome $user->name.", "response_data" => $user, 'token' => $token->plainTextToken,], 200);
+          return redirect('/');
+            // return response()->json(["status" => true, "message" => "Login Successfully Welcome $user->name.", "response_data" => $user, 'token' => $token->plainTextToken,], 200);
         } else {
             return response()->json(["status" => false, "message" => "Failed To login User,Check your Input "], 404);
         }
@@ -83,7 +97,10 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
+        
+// return redirect('/login');
         return response()->json(["status" => true, "message" => "user has beeen logout"], 200);
     }
+    
     
 }
