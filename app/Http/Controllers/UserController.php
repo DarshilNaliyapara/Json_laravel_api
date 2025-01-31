@@ -76,8 +76,7 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|min:3',
+        $validated = $request->validate([   
             'email' => 'required|email',
             'password' => 'required|min:4',
         ]);
@@ -88,7 +87,7 @@ class UserController extends Controller
 
         $request->session()->regenerate();
         if ($user) {
-            $token = $user->createToken($request->name);
+            $token = $user->createToken($request->email);
 
             return redirect('/');
 

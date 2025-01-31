@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Register Form</title>
+    <title>Login</title>
     <style>
-        body {
+       body {
             font-family: Arial, sans-serif;
             background-color: #f4f7fc;
             display: flex;
@@ -24,17 +24,20 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
+            text-align: center;
         }
 
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
 
         label {
             font-size: 14px;
             color: #333;
-            margin-bottom: 5px;
+            font-weight: bold;
             display: block;
+            margin-bottom: 5px;
         }
 
         input {
@@ -44,6 +47,7 @@
             border-radius: 5px;
             font-size: 14px;
             color: #333;
+            box-sizing: border-box;
         }
 
         input:focus {
@@ -67,12 +71,18 @@
             background-color: #4a8052;
         }
 
-        .clone {
-            margin-bottom: 20px;
+        .register-link {
+            margin-top: 15px;
         }
 
-        label {
-            font-weight: bold;
+        .register-link a {
+            color: #5c9f6e;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -85,10 +95,7 @@
         @csrf
 
         <div class="clone">
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" name="name" id="name" required>
-            </div>
+          
             <div class="form-group">
                 <label for="email">E-mail:</label>
                 <input type="email" name="email" id="email" required>
@@ -99,8 +106,8 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 15px">
-            <a href="/register">no account? Register</a>
+        <div class="register-link">
+            <p>No account? <a href="{{route('auth.register')}}">Register</a></p>
         </div>
         <button type="submit" id="submit-btn">Login</button>
 

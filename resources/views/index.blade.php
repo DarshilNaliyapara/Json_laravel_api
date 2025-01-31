@@ -10,20 +10,23 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f7f7f7;
+            background-color: #ecf0f1;
             color: #333;
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         .container {
-            width: 80%;
+            width: 90%;
             max-width: 800px;
-            margin: 20px auto;
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
@@ -32,35 +35,44 @@
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             font-weight: bold;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            margin-top: 6px;
             color: #34495e;
         }
 
         input[type="text"],
         input[type="email"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 16px;
             box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #3498db;
+            outline: none;
         }
 
         button {
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 4px;
-            margin: 10px 0;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            margin: 10px 5px;
         }
 
         button:hover {
@@ -68,15 +80,14 @@
         }
 
         .clone {
-            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 15px;
         }
 
         .cloned {
-            margin-top: 10px;
-        }
-
-        .form-group input {
-            margin-bottom: 10px;
+            margin-top: 15px;
         }
 
         .added-forms {
@@ -85,9 +96,8 @@
 
         .added-forms div {
             background-color: #ecf0f1;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            padding: 12px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -122,6 +132,69 @@
 
         .home-link a:hover {
             text-decoration: underline;
+        }
+
+        #search {
+            width: 50%;
+            padding: 10px;
+            margin: 20px 0;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        table td a,
+        table td button {
+            padding: 8px 12px;
+            font-size: 14px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        table td .btn-warning {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+        }
+
+        table td .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+
+        table td .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        table td .btn-danger:hover {
+            background-color: #c0392b;
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -212,8 +285,10 @@
 
         @csrf
         @if (Route::currentRouteName() === 'forms.edit')
+        <div class="home-link">
             <a href="/">Home</a>
-        @endif
+        </div>
+            @endif
         <a href="/logout">Logout</a>
         <div class="clone">
             <field class="form-group">

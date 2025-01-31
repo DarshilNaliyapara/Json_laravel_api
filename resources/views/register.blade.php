@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Form</title>
     <style>
-        body {
+         body {
             font-family: Arial, sans-serif;
             background-color: #f4f7fc;
             display: flex;
@@ -24,17 +24,20 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
+            text-align: center;
         }
 
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
 
         label {
             font-size: 14px;
             color: #333;
-            margin-bottom: 5px;
+            font-weight: bold;
             display: block;
+            margin-bottom: 5px;
         }
 
         input {
@@ -44,6 +47,7 @@
             border-radius: 5px;
             font-size: 14px;
             color: #333;
+            box-sizing: border-box;
         }
 
         input:focus {
@@ -67,11 +71,18 @@
             background-color: #4a8052;
         }
 
-        .clone {
-            margin-bottom: 20px;
+        .login-link {
+            margin-top: 15px;
         }
-        label {
-            font-weight: bold;
+
+        .login-link a {
+            color: #5c9f6e;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -99,10 +110,10 @@
             </div>
         </div>
         
-        <div  style="margin-bottom: 15px">
-            <a href="/login">Already have account? Login</a>
+        <div class="login-link">
+            <p>Already have account?<a href="{{route('auth.login')}}"> Login</a></p>
         </div>
-        <button type="submit" id="submit-btn">Save</button>
+        <button type="submit" id="submit-btn">Register</button>
     </form>
 </body>
 
