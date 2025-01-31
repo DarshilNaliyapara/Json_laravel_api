@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login</title>
+    <title>Create Roles And Permission</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -84,32 +84,40 @@
         .register-link a:hover {
             text-decoration: underline;
         }
+        
     </style>
 </head>
 
 <body>
 
-    <form action="{{ route('auth.login') }}" id="input" method="post">
-        <h1> Login </h1>
+    <form action="{{ route('users.createroles') }}" id="input" method="post">
+        <h1> Create Roles And Permission </h1>
         {{-- <input type="hidden" name="id" id="id" value="{{ isset($id) ? $id : '' }}"> --}}
         @csrf
 
         <div class="clone">
 
             <div class="form-group">
-                <label for="email">E-mail:</label>
-                <input type="email" name="email" id="email" required>
+                <label for="role">Role:</label>
+                <input type="text" name="role" id="role" required>
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required>
+                <label for="permissions">Select Permissions:</label>
+                <div id="permissions" class="form-group">
+                    @foreach($permissions as $permission)
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->id }}" id="permission-{{ $permission->id }}">
+                            <label class="form-check-label" for="permission-{{ $permission->id }}">
+                                {{ $permission->name }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 
-        <div class="register-link">
-            <p>No account? <a href="{{ route('auth.register') }}">Register</a></p>
-        </div>
-        <button type="submit" id="submit-btn">Login</button>
+       
+        <button type="submit" id="submit-btn">Create</button>
 
     </form>
 </body>

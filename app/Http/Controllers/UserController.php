@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Session;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
@@ -46,7 +48,10 @@ class UserController extends Controller
             $user = Auth::user();
             
             Session::regenerate();
+            $role = Role::firstOrCreate(['name' => 'writer']);
+            $permission = Permission::firstOrCreate(['name' => 'edit articles']);
             
+            $role->givePermissionTo($permission);
             $token = $user->createToken($request->name)->plainTextToken;
             if ($user) {
                 return redirect('/');
