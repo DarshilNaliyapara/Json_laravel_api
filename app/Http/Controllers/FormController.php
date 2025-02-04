@@ -21,7 +21,7 @@ class FormController extends Controller
             $forms = array_map(function ($item) {
                 return $item;
             }, $data);
-            
+
         }
 
         return view('index', ['forms' => $forms, 'form' => $form]);
@@ -34,8 +34,9 @@ class FormController extends Controller
         $forms = empty($customers)?[]:json_decode($customers->meta_value, true);
         if (count($forms)>0 && !empty($customers)) {
 
-            $vals = $request->inputdata;
-           
+            $vals = $request->all();
+
+
             $mxnum = -1;
             foreach ($forms as $form) {
                 if ($form['id'] > $mxnum) {
@@ -43,13 +44,13 @@ class FormController extends Controller
                 }
             }
 
-            foreach ($vals as $key => $val) {
+            foreach ($vals["name"] as $key => $name) {
 
                 $mxnum ++;
                 $forms[] = [
                     'id' => $mxnum,
-                    'name' => $val['name'],
-                    'email' => $val['email'],
+                    'name' => $name,
+                    'email' => $vals['email'][$key],
                 ];
             }
 
@@ -57,22 +58,22 @@ class FormController extends Controller
             $customers->save();
 
         } else {
-           
-            $vals = $request->inputdata;
-            
-            foreach ($vals as $key => $val) {
 
-                $name = $val['name'];
-                $email = $val['email'];
+            $vals = $request->all();
+
+            foreach ($vals["name"] as $key => $name) {
+
+                $inname = $name;
+                $email = $vals['email'][$key];
                 $id = $key + 1;
 
                 $forms[] = [
                     'id' => $id,
-                    'name' => $name,
+                    'name' => $inname,
                     'email' => $email,
                 ];
             }
-           
+
             $data = [
                 'meta_name' => 'customers',
                 'meta_value' => json_encode($forms),
@@ -103,6 +104,7 @@ class FormController extends Controller
 
     public function update(Request $request, int $id)
     {
+        $catogry->product()->
         $vals = $request->inputdata;
 
         foreach ($vals as $key => $val) {

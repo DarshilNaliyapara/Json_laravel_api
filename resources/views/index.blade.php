@@ -232,34 +232,43 @@
             });
             $('#input').submit(function(e) {
                 e.preventDefault();
+                let form = document.getElementById('input')
+                let inputData = new FormData(form);
 
-                const forms = document.querySelectorAll('.clone');
-                let data = [];
-                forms.forEach((container, index) => {
-                    const jname = container.querySelector('input[name="name"]').value;
-                    const jemail = container.querySelector('input[name="email"]').value;
+                // let val = new URLSearchParams($("#input").serialize());
+                // val.delete("_token");
+                // console.log(val);
 
-                    const IsRouteEdit = @json(Route::currentRouteName() === 'forms.edit');
-                    data.push({
-                        name: jname,
-                        email: jemail
-                    })
-                });
+                // const inputdata = new FormData(document.querySelectorAll('.clone'));
+                // console.log(inputdata.get('email'));
+                // const forms = document.querySelectorAll('.clone');
+                // let data = [];
+                // forms.forEach((container, index) => {
+                //     const jname = container.querySelector('input[name="name"]').value;
+                //     const jemail = container.querySelector('input[name="email"]').value;
+
+                //     const IsRouteEdit = @json(Route::currentRouteName() === 'forms.edit');
+                //     data.push({
+                //         name: jname,
+                //         email: jemail
+                //     })
+                // });
 
                 const url =
                     '{{ Route::currentRouteName() === 'forms.edit' ? route('forms.update', $id) : route('forms.store') }}';
                 const method = '{{ Route::currentRouteName() === 'forms.edit' ? 'PATCH' : 'POST' }}';
                 console.log(method);
 
+
                 $.ajax({
                     url: url,
-                    type: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr(
-                            'content'),
-                        _method: method,
-                        inputdata: data,
+                    type: 'post',
+                    data: inputData,
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
                     },
+                    processData: false,
+                    contentType: false,
 
                     success: function(response) {
 
@@ -283,22 +292,22 @@
 
     <form class="input-form" id="input" method="post">
 
-        @csrf
+     
         @if (Route::currentRouteName() === 'forms.edit')
-        <div class="home-link">
-            <a href="/">Home</a>
-        </div>
-            @endif
+            <div class="home-link">
+                <a href="/">Home</a>
+            </div>
+        @endif
         <a href="/logout">Logout</a>
         <div class="clone">
             <field class="form-group">
                 <label>Name:</label>
-                <input type="text" name="name" id="name"
+                <input type="text" name="name[]" id="name"
                     value="{{ old('name', isset($for['name']) ? $for['name'] : '') }}" required>
             </field>
             <field class="form-group">
                 <label>E-mail:</label>
-                <input type="email" name="email" id="email"
+                <input type="email" name="email[]" id="email"
                     value = "{{ old('email', isset($for['email']) ? $for['email'] : '') }}" required>
 
             </field>

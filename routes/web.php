@@ -44,3 +44,8 @@ Route::post('/users/roles-and-permission',[RolesAndPermissionController::class,'
 Route::get('/users/roles-and-permission/remove',[RolesAndPermissionController::class,'index'])->name('users.showremoveroles');
 Route::post('/users/set-roles-and-permission',[RolesAndPermissionController::class,'setroles'])->name('users.setroles');
 Route::get('/users/roles-and-permission/set',[RolesAndPermissionController::class,'index'])->name('users.showsetroles');
+
+
+Route::get('/test',function(){
+return view('test.index');
+});
