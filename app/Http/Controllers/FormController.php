@@ -104,7 +104,7 @@ class FormController extends Controller
 
     public function update(Request $request, int $id)
     {
-        $catogry->product()->
+        
         $vals = $request->inputdata;
 
         foreach ($vals as $key => $val) {
