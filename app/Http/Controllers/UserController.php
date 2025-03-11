@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Form;
 use App\Models\User;
+use App\Exports\UsersExport;
+use App\Imports\UsersImport;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Permission;
@@ -46,11 +51,11 @@ class UserController extends Controller
             Auth::login($user);
 
             $user = Auth::user();
-            
+
             Session::regenerate();
             $role = Role::firstOrCreate(['name' => 'writer']);
             $permission = Permission::firstOrCreate(['name' => 'edit articles']);
-            
+
             $role->givePermissionTo($permission);
             $token = $user->createToken($request->name)->plainTextToken;
             if ($user) {
@@ -61,9 +66,7 @@ class UserController extends Controller
                     "response_data" => $user,
                     'token' => $token,
                 ], 200);
-            } 
-            
-            else {
+            } else {
                 return response()->json([
                     "status" => false,
                     "message" => "Failed to Create User.",
@@ -81,7 +84,7 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
-        $validated = $request->validate([   
+        $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:4',
         ]);
@@ -115,5 +118,43 @@ class UserController extends Controller
 
         return response()->json(["status" => true, "message" => "user has beeen logout"], 200);
     }
-   
+    public function exportData()
+    {
+        return Excel::download(new UsersExport, 'users.pdf');
+    }
+    public function importData(Request $request)
+    {
+        $request->validate([
+            "importexcel" => ["required", "file"]
+        ]);
+
+        Excel::import(new UsersImport, $request->file("importexcel"));
+        return redirect()->back()->with("status", "Data Imported successfully");
+    }
+    public function exportpdf(Request $request)
+    {
+        $customers = Form::where('meta_name', 'customers')->first();
+        $data = [];
+        $forms = [];
+        if (!empty($customers)) {
+            $data = isset($customers->meta_value) ? json_decode($customers->meta_value, true) : [];
+
+            $forms = array_map(function ($item) {
+                return $item;
+            }, $data);
+
+        }
+
+        $users = User::all();
+        $data = [
+            'title' => "Pdf export",
+            'date' => date('d/m/y'),
+            'users' => $users,
+            'forms'=> $forms
+        ];
+        $pdf = Pdf::loadView('invoice', $data);
+        return $pdf->download(
+            'invoice.pdf'
+        );
+    }
 }

@@ -2,52 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\OrderProcess;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
+use App\Listeners\SendOrderConfirmation;
 
 class TestController extends Controller
 {
-    public function test(Request $request){
 
-        $json = '[
+    public function search(Request $request)
     {
-        "id": "1",
-        "name": "Darshil",
-        "email": "darshil@gmail.com"
-    },
-    {
-        "id": "2",
-        "name": "test",
-        "email": "test@gmail.com"
-    },
-     {
-        "id": "3",
-        "name": "test123",
-        "email": "host@gmail.com"
-    },
-     {
-        "id": "4",
-        "name": "user",
-        "email": "user@gmail.com"
-    }
-]';
-
-$data = json_decode($json,true);
-$names = array_map(function($item){
-    return $item;
-},$data);
-
-$id = 1;
-$filteredForm = array_filter($data, function($item) use ($id) {
-    return (int) $item['id'] !== (int) $id;
-});
-
-$temp = array_values($filteredForm);
-
-
-return view('test',['names'=>$names,'for'=>$filteredForm]);
-    }
-    public function search(Request $request){
         $input = $request->inputdata;
         dd($input);
     }
+
+
+    public function test2()
+    {
+        $order = "item";
+        OrderProcess::dispatch($order); 
+        // \Artisan::call('schedule:run'); 
+        Log::info('Order is ready');
+        return response()->json(['message' => 'Order placed successfully']);
+    }
+   
+
 }

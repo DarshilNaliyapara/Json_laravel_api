@@ -29,14 +29,14 @@ class FormController extends Controller
 
     public function store(Request $request, Form $form)
     {
-
+        $request->validate([
+            'name' => 'required',
+            'email' =>'required',
+        ]);
         $customers = Form::where('meta_name', 'customers')->first();
-        $forms = empty($customers)?[]:json_decode($customers->meta_value, true);
-        if (count($forms)>0 && !empty($customers)) {
-
+        $forms = empty($customers) ? [] : json_decode($customers->meta_value, true);
+        if (count($forms) > 0 && !empty($customers)) {
             $vals = $request->all();
-
-
             $mxnum = -1;
             foreach ($forms as $form) {
                 if ($form['id'] > $mxnum) {
@@ -46,7 +46,7 @@ class FormController extends Controller
 
             foreach ($vals["name"] as $key => $name) {
 
-                $mxnum ++;
+                $mxnum++;
                 $forms[] = [
                     'id' => $mxnum,
                     'name' => $name,
@@ -106,7 +106,7 @@ class FormController extends Controller
     {
 
 
-        
+
         $vals = $request->inputdata;
 
         foreach ($vals as $key => $val) {
@@ -132,7 +132,8 @@ class FormController extends Controller
                 if ($form['id'] == $filteredForm['id']) {
                     $forms[$key] = $filteredForm;
                 }
-            };
+            }
+            ;
             $customers->meta_value = json_encode($forms);
             $customers->save();
         }

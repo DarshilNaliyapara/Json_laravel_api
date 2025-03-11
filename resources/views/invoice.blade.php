@@ -15,6 +15,7 @@
             margin: 0;
             padding: 20px;
             display: flex;
+            border-radius: 8px;
             justify-content: center;
             align-items: center;
             flex-direction: column;
@@ -291,67 +292,28 @@
 </head>
 
 <body>
-
-    <form class="input-form" id="input" method="post">
-
-
-        @if (Route::currentRouteName() === 'forms.edit')
-            <div class="home-link">
-                <a href="/">Home</a>
-            </div>
-        @endif
-        <a href="/logout">Logout</a>
-        <div class="clone">
-            <field class="form-group">
-                <label>Name:</label>
-                <input type="text" name="name[]" id="name"
-                    value="{{ old('name', isset($for['name']) ? $for['name'] : '') }}" required>
-            </field>
-            <field class="form-group">
-                <label>E-mail:</label>
-                <input type="email" name="email[]" id="email"
-                    value = "{{ old('email', isset($for['email']) ? $for['email'] : '') }}" required>
-
-            </field>
-        </div>
-        <div class="cloned">
-
-        </div>
-        @if (Route::currentRouteName() !== 'forms.edit')
-            <button type="button" id="remove_btn">Remove</button>
-            <button type="button" id="add_btn">Add</button>
-        @endif
-
-        <button type="submit" id="submit-btn">save</button>
-    </form>
-
+    <h1>
+        {{ $title }}
+    </h1>
+    <h2>{{ $date }}</h2>
     
-
     <table class="table table-bordered table-striped table-hover">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>User Name</th>
                 <th>Email</th>
-                <th>Action</th>
+
             </tr>
         </thead>
 
-        @forelse ($forms as $for)
+        @forelse ($users as $user)
             <tbody id="user_table">
                 <tr>
-                    <td>{{ $for['id'] }}</td>
-                    <td>{{ $for['name'] }}</td>
-                    <td>{{ $for['email'] }}</td>
-                    <td>
-                        <a href="{{ route('forms.edit', $for['id']) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('forms.destroy', $for['id']) }}" method="post" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm"
-                                onclick="return confirm('Are you sure you want to delete User?')">DELETE</button>
-                        </form>
-                    </td>
+                    <td>{{ $user->id }}</td>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+
                 </tr>
             @empty
                 <tr>
@@ -361,6 +323,36 @@
 
         </tbody>
     </table>
+
+
+    <table class="table table-bordered table-striped table-hover" style="margin-top: 15px">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>User Name</th>
+                <th>Email</th>
+
+            </tr>
+        </thead>
+
+        @forelse ($forms as $form)
+            <tbody id="user_table">
+                <tr>
+                    <td>{{ $form["id"]}}</td>
+                    <td>{{ $form["name"] }}</td>
+                    <td>{{ $form["email"] }}</td>
+
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="text-center">No Data Available.</td>
+                </tr>
+        @endforelse
+
+        </tbody>
+    </table>
+
+
 
 
 </body>

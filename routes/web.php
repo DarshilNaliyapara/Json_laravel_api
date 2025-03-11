@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Controllers\FormController;
-use App\Http\Controllers\RolesAndPermissionController;
-use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\FormController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RolesAndPermissionController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +18,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
  */
-
+Route::get('user/fetch', [FileController::class, 'fetchdata']);
+Route::get('user/test', [TestController::class, 'test2']);
+Route::get('user/export', [UserController::class, 'exportpdf']);
 Route::middleware(['auth', 'verified'])->get('/', [FormController::class, 'index'])->name('forms.index');
 Route::middleware(['auth', 'verified'])->resource('forms', FormController::class);
 
@@ -46,6 +50,4 @@ Route::post('/users/set-roles-and-permission',[RolesAndPermissionController::cla
 Route::get('/users/roles-and-permission/set',[RolesAndPermissionController::class,'index'])->name('users.showsetroles');
 
 
-Route::get('/test',function(){
-return view('test.index');
-});
+Route::resource('test',FileController::class);
