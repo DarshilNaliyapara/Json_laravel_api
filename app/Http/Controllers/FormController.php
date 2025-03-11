@@ -104,6 +104,8 @@ class FormController extends Controller
 
     public function update(Request $request, int $id)
     {
+
+
         
         $vals = $request->inputdata;
 
